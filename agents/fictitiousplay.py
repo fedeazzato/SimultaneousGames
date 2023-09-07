@@ -55,17 +55,18 @@ class FictitiousPlay(Agent):
 
             proba = 1
             for agent in self.game.agents:
+                # deja afuera al propio agente (el agente actual)
                 if agent != self.agent:
-                    proba *= self.learned_policy[agent]
+                    action_agent= act[self.game.agent_name_mapping[agent]]
+                    proba *= self.learned_policy[agent][action_agent]
 
             utility[a]+= rewards[act]*proba
 
         return utility
     
     def bestresponse(self):
-        a = None
         # retornar la acción de mayor utilidad
-        a = np.argmax(self.get_utility)
+        a = np.argmax(self.get_utility())
         return a
      
     def update(self) -> None:
