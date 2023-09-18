@@ -9,7 +9,6 @@ class FictitiousPlay(Agent):
     def __init__(self, game: SimultaneousGame, agent: AgentID, initial=None, seed=None) -> None:
         super().__init__(game=game, agent=agent)
         np.random.seed(seed=seed)
-
         
         self.count: dict[AgentID, ndarray] = {}
         #
@@ -28,6 +27,9 @@ class FictitiousPlay(Agent):
 
     def get_rewards(self) -> dict:
         g = self.game.clone()
+        # this line of code is creating a list of lists. Each inner list contains the actions available to
+        #  a specific agent in the collection of agents (g.agents). The map function is used to apply this 
+        # process to all agents in the collection.
         agents_actions = list(map(lambda agent: list(g.action_iter(agent)), g.agents))
         rewards: dict[tuple, float] = {}
         
@@ -47,6 +49,7 @@ class FictitiousPlay(Agent):
     def get_utility(self):
         rewards = self.get_rewards()
         # Inicializa con tantos ceros como cantidad de acciones posibles existan
+        # Puede haber casos en que cada agente tenga acciones posibles diferentes
         utility = np.zeros(self.game.num_actions(self.agent))
         
         for act in rewards.keys():

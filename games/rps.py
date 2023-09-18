@@ -1,12 +1,17 @@
 import numpy as np
 from numpy import ndarray
 from gymnasium.spaces import Discrete
-from pettingzoo.utils.env import ActionDict, ObsDict
+#from pettingzoo.utils.env import ActionDict, ObsDict
 from base.game import SimultaneousGame
+
+ObsDict = dict #env.ObsDict
+AgentID = dict #env.AgentID
+ActionDict = dict #env.ActionDict
 
 class RPS(SimultaneousGame):
 
     def __init__(self):
+        # _R es la payoff matrix
         self._R = np.array([[0., -1., 1.], [1., 0., -1.], [-1., 1., 0.]])
 
         # agents
@@ -29,11 +34,12 @@ class RPS(SimultaneousGame):
     def step(self, actions: ActionDict) -> tuple[ObsDict, dict[str, float], dict[str, bool], dict[str, bool], dict[str, dict]]:
         # rewards
         (a0, a1) = tuple(map(lambda agent: actions[agent], self.agents))
+        # las acciones de cada agente sirven como coordenadas de la payoff matrix
         r = self._R[a0][a1]
         self.rewards[self.agents[0]] = r
         self.rewards[self.agents[1]] = -r
 
-        # observations
+        # observations, registra la acción que hizo cada agente
         self.observations = dict(map(lambda agent: (agent, actions), self.agents))
 
         # etcetera
