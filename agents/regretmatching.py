@@ -25,13 +25,13 @@ class RegretMatching(Agent):
         actions = played_actions.copy()
         # a = actions[self.agent]
         g = self.game.clone()
-        # u parece que està destinado a almacenar el regret para cada una de las tres 
+        # u parece que está destinado a almacenar el regret para cada una de las tres 
         # acciones,que se asumen en orden R - P - S (array [valor valor valor])
         u = np.zeros(g.num_actions(self.agent), dtype=float)
         # 
         # TODO: calcular regrets
         # Como recibe "played actions" se asume que la verdadera jugada ya sucediò
-        # entonces, ahora habrá que hacer jugadas en el juego clonado y evalar
+        # entonces, ahora habrá que hacer jugadas en el juego clonado y evaluar
         # las recompensas de las jugadas que no se hicieron por parte del jugador actual
         # dejando fija la jugada del oponente 
         
@@ -43,18 +43,20 @@ class RegretMatching(Agent):
                 self_reward = self.game.reward(agent)
             else:
                 opponent_action = actions[agent]
-                opponent_reward = self.game.reward(agent)
+                # opponent_reward = self.game.reward(agent) (reward del oponente sólo para testing)
                 opponent_agent = agent
 
         # Ahora, sobre el juego clonado "g" (que en realidad está vacío porque el clone
-        # también implementa un reset) voy a jugar con las aciones alternativas para el
+        # también implementa un reset) voy a jugar con las acciones alternativas para el
         # jugador actual              
         
         # Voy a iterar sobre todas las acciones posibles dejando afuera a la que ya jugó
         # Armo un diccionario que deja fija la acción del oponente y que varía 
         # las acciones del jugador actual, y se lo paso al step
-        possible_actions = [0,1,2]
+        # possible_actions = [0,1,2] (esta era la versiòn con las acciones hardcodeadas) 
         
+        possible_actions = g.action_iter(self.agent)
+
         # diccionario tipo {agente: acción}
         alternative_actions = {}
         alternative_actions[opponent_agent] = opponent_action
@@ -64,8 +66,8 @@ class RegretMatching(Agent):
         regrets[self_action] = 0 # El regret sobre la jugada real del jugador actual es cero
 
         # print(actions)
-        print("acción y reward jugador actual", self_action, "/", self_reward, " - ", 
-              "acción y reward oponente", opponent_action, "/", opponent_reward)    
+        # print("acción y reward jugador actual", self_action, "/", self_reward, " - ", 
+        #      "acción y reward oponente", opponent_action, "/", opponent_reward)    
 
         for action in possible_actions:
             if action != self_action:
@@ -104,7 +106,7 @@ class RegretMatching(Agent):
             self.curr_policy = self.cum_regrets / sum
         else:
             self.curr_policy = np.full(self.game.num_actions(self.agent), 1/self.game.num_actions(self.agent))
-        print(self.curr_policy)               
+        # print("regret matching  - ", self.agent, "policy - ",  self.curr_policy)               
 
     def update(self) -> None:
         # niter: nombre comùn para una variable que se usa como conador de loops
@@ -116,6 +118,7 @@ class RegretMatching(Agent):
         self.regret_matching()
         self.niter += 1
         self.learned_policy = self.sum_policy / self.niter
+        # print("update - ", self.agent, "policy - ",  self.curr_policy)  
 
     def action(self):
         self.update()
