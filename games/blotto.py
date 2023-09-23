@@ -2,8 +2,8 @@ from itertools import product, filterfalse
 import numpy as np
 from numpy import ndarray
 from gymnasium.spaces import Discrete
-from pettingzoo.utils.env import ActionDict, ObsDict
-from base.game import SimultaneousGame
+# from pettingzoo.utils.env import ActionDict, ObsDict
+from base.game import SimultaneousGame, ObsDict, ActionDict
 
 def to_ord(s):
     return list(map(lambda x: ord(x)-64,s))
