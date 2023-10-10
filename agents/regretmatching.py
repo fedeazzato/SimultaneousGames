@@ -8,16 +8,14 @@ class RegretMatching(Agent):
     def __init__(self, game: SimultaneousGame, agent: AgentID, initial=None, seed=None) -> None:
         super().__init__(game=game, agent=agent)
         if (initial is None):
-            self.curr_policy = np.full(self.game.num_actions(self.agent), 1/self.game.num_actions(self.agent))
-            self.cum_regrets = np.zeros(self.game.num_actions(self.agent))
-            self.sum_policy = np.zeros(self.game.num_actions(self.agent))
-            self.learned_policy = np.zeros(self.game.num_actions(self.agent))
-            self.niter = 1
-            np.random.seed(seed=seed)
+          self.curr_policy = np.full(self.game.num_actions(self.agent), 1/self.game.num_actions(self.agent))
         else:
-            self.curr_policy = initial.copy()
-            self.sum_policy = self.curr_policy.copy()
-            self.learned_policy = self.curr_policy.copy()
+          self.curr_policy = initial.copy()
+        self.cum_regrets = np.zeros(self.game.num_actions(self.agent))
+        self.sum_policy = self.curr_policy.copy()
+        self.learned_policy = self.curr_policy.copy()
+        self.niter = 1
+        np.random.seed(seed=seed)
     
     def regrets(self, played_actions: ActionDict) -> dict[AgentID, float]:
         # The played_actions parameter contains the actions chosen by all agents
@@ -106,6 +104,7 @@ class RegretMatching(Agent):
             self.curr_policy = self.cum_regrets / sum
         else:
             self.curr_policy = np.full(self.game.num_actions(self.agent), 1/self.game.num_actions(self.agent))
+        self.sum_policy = self.curr_policy * self.niter
         # print("regret matching  - ", self.agent, "policy - ",  self.curr_policy)               
 
     def update(self) -> None:
