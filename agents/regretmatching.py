@@ -29,12 +29,12 @@ class RegretMatching(Agent):
 
         for action in g.action_iter(self.agent):
             actions[self.agent] = action
-            # Reset the environment and take the action to observe the utility
+            # Reset del ambiente para aplicar la acción alternativa y evaluar utilidad
             g.reset()
             g.step(actions)
             u[action] = g.reward(self.agent)
 
-        # Calculate regrets for each action
+        # Calcular los regrets positivos de acciones alternativas
         r = np.zeros(g.num_actions(self.agent), dtype=float)
         for action in g.action_iter(self.agent):
             r[action] = max(0.0, u[action] - u[a])
